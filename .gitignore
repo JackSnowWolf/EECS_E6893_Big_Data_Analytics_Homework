@@ -4,3 +4,7 @@
 *.pyc
 __pycache__/
 *.zip
+
+pic
+hw1/data
+
