@@ -60,15 +60,47 @@ def get_edges(data, sqlcontext):
         friends = line[1]
         for i in range(len(friends)):
             yield (user, friends[i])
+
     edges = data.flatMap(map_friends)
     return sqlcontext.createDataFrame(edges, schema=["src", "dst"])
 
 
 def connected_components(graph):
-    pass
+    result = graph.connectedComponents()
+
+    # How many clusters / connected components in total for this dataset
+    cluster_num = result.select("component").distinct().count()
+    print("clusters amount: ", cluster_num)
+    print()
+
+    # How many users in the top 10 clusters?
+    print("number of users in top 10 cluster")
+    res1 = result.groupBy("component").count().orderBy('count',
+                                                       ascending=False)
+    res2 = res1.head(10)
+    total = 0
+    for row in res2:
+        total += row["count"]
+        print("cluster id:\t%d\tnumber of users:\t%d" % (
+            row["component"], row["count"]))
+    print("Total number of users in top 10 cluster:\t", total)
+    print()
+
+    # What are the user ids for the cluster which has 25 users?
+    print("user ids for the cluster which has 25 users")
+    cluster_id = res1.where(res1["count"] == 25).select("component").collect()
+    cluster_id = [row["component"] for row in cluster_id]
+    user_list = result.where(result["component"].isin(cluster_id)).select(
+        "id").collect()
+    user_ls = [row["id"] for row in user_list]
+    print(user_ls)
+    print()
+    return
+
 
 def page_rank(graph):
     pass
+
 
 def main():
     # Configure Spark
@@ -88,6 +120,7 @@ def main():
     vertices = get_vertices(data, sqlcontext)
     graph = GraphFrame(vertices, edges)
     connected_components(graph=graph)
+    page_rank(graph=graph)
 
 
 if __name__ == '__main__':
