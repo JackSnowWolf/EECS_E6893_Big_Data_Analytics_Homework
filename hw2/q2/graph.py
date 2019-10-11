@@ -66,6 +66,12 @@ def get_edges(data, sqlcontext):
 
 
 def connected_components(graph):
+    """
+    run connected components on graph
+    :param graph: Graph contains vertices and edges
+    :return:
+    """
+    print("connected components")
     result = graph.connectedComponents()
 
     # How many clusters / connected components in total for this dataset
@@ -99,7 +105,34 @@ def connected_components(graph):
 
 
 def page_rank(graph):
-    pass
+    """
+    run PageRank on graph
+    :param graph: Graph contains vertices and edges
+    :return:
+    """
+    print("PageRank:")
+    result = graph.pageRank(resetProbability=0.15, tol=0.01)
+
+    # Provide a list of 10 important users (User ID) in this network.
+    print("a list of 10 important users (User ID) in this network:")
+    user_list = result.vertices.select("id", "pagerank") \
+        .orderBy('pagerank',
+                 ascending=False).head(10)
+    user_ls = [row["id"] for row in user_list]
+    print(user_ls)
+    print("The most important one is %d" % user_ls[0])
+    print()
+
+    # using different parameter settings for PageRank
+    print("Using different parameter:")
+    result = graph.pageRank(resetProbability=0.1, maxIter=20)
+    print("a list of 10 important users (User ID) in this network:")
+    user_list = result.vertices.select("id", "pagerank") \
+        .orderBy('pagerank',
+                 ascending=False).head(10)
+    user_ls = [row["id"] for row in user_list]
+    print(user_ls)
+    print("The most important one is %d" % user_ls[0])
 
 
 def main():

@@ -1,0 +1,8 @@
+a list of 10 important users (User ID) in this network:
+[10164, 15496, 14689, 24966, 7884, 934, 45870, 5148, 20283, 46039]
+The most important one is 10164
+
+Using different parameter:
+a list of 10 important users (User ID) in this network:
+[10164, 15496, 14689, 24966, 7884, 934, 45870, 20283, 46039, 14996]
+The most important one is 10164
