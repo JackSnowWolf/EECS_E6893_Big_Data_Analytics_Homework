@@ -1,7 +1,6 @@
 from pyspark import SparkConf, SparkContext
 import pyspark
 import sys
-from collections import defaultdict
 
 
 def getData(sc, filename):
@@ -17,99 +16,101 @@ def getData(sc, filename):
     """
     # read text file into RDD
     data = sc.textFile(filename)
-
-    # TODO: implement your logic here
-
+    data = data.map(lambda line: line.split("\t")).map(
+        lambda line: (int(line[0]), [int(x) for x in line[1].split(",")] if len(
+            line[1]) else []))
     return data
 
 
-def mapFriends(line):
+def map_friends(line):
     """
-    List out every pair of mutual friends, also record direct friends.
-    Hint:
-    For each <User>, record direct friends into a list:
-    [(<User>, (friend1, 0)),(<User>, (friend2, 0)), ...],
-    where 0 means <User> and friend are already direct friend,
-    so you don't need to recommand each other.
-
-    For friends in the list, each of them has a friend <User> in common,
-    so for each of them, record mutual friend in both direction:
-    (friend1, (friend2, 1)), (friend2, (friend1, 1)),
-    where 1 means friend1 and friend2 has a mutual friend <User> in this "line"
-
-    There are possibly multiple output in each input line,
-    we applied flatMap to flatten them when using this function.
-    Args:
-        line (tuple): tuple in data RDD
-    Yields:
-        RDD: rdd like a list of (A, (B, 0)) or (A, (C, 1))
+    map function to construct edge between friends
+    construct a pair of ((friend1, friend2) -> common friends list)
+    if two friends are already direct friends, then common friends list
+    is empty.
+    :param line: tuple of (<User>, [friend1, friend2, ... ]),
+                each user and a list of user's friends
+    :return:
     """
+    user = line[0]
     friends = line[1]
+    yield ((user, user), [])
     for i in range(len(friends)):
-        # Direct friend
-        # TODO: implement your logic here
-
-        for j in range(i + 1, len(friends)):
-            # Mutual friend in both direction
-            # TODO: implement your logic here
-            pass
+        yield ((user, friends[i]), [])
+        for j in range(len(friends)):
+            yield ((friends[i], friends[j]), [user])
+            yield ((friends[j], friends[i]), [user])
 
 
-def findMutual(line):
+def reduce_friends_pair(pair1, pair2):
     """
-    Find top 10 mutual friend for each person.
-    Hint: For each <User>, input is a list of tuples of friend relations,
-    whether direct friend (count = 0) or has friend in common (count = 1)
-
-    Use friendDict to store the number of mutual friend that the current <User>
-    has in common with each other <User> in tuple.
-    Input:(User1, [(User2, 1), (User3, 1), (User2, 1), (User3, 0), (User2, 1)])
-    friendDict stores: {User2:3, User3:1}
-    directFriend stores: User3
-
-    If a user has many mutual frineds and is not a direct frined, we recommend
-    them to be friends.
-
-    Args:
-        line (tuple): a tuple of (<User1>, [(<User2>, 0), (<User3>, 1)....])
-    Returns:
-        RDD of tuple (line[0], returnList),
-        returnList is a list of recommended friends
+    reduce function to reduce same friend-friend pairs.
+    If the common friend list is None, which means they are direct friends,
+    still return empty list
+    :param pair1: reduceByKey first pair
+    :param pair2: reduceByKey second pair
+    :return: a pair of ((friend1, friend2) -> common friends list)
+            if two friends are already direct friends,
+            then common friends list is empty.
     """
-    # friendDict, Key: user, value: count of mutual friends
-    friendDict = defaultdict(int)
-    # set of direct friends
-    directFriend = set()
-    # initialize return list
-    returnList = []
+    if len(pair1) == 0 or len(pair2) == 0:
+        return []
+    common_friends = set(pair1).union(set(pair2))
+    return list(common_friends)
 
-    # TODO: Iterate through input to aggregate counts
-    # save to friendDict and directFriend
 
-    # TODO: Formulate output
+def find_mutual(line):
+    """
+    map mutual edges into (user, (friend, common_friend_num))
+    :param line: a pair of ((friend1, friend2) -> common friends list)
+            if two friends are already direct friends,
+            then common friends list is empty.
+    :return: (user, (friend, common_friend_num))
+    """
+    return line[0][0], (line[0][1], len(line[1]))
 
-    return (line[0], returnList)
+
+def sort_top_friends(line):
+    """
+    sort friend has most common friends
+    :param line:  (user, [(friend, common_friend_num), ...])
+    :return: recommendations result for the user
+    """
+    user = line[0]
+    friends = sorted(line[1], key=lambda x: (x[1], -x[0]), reverse=True)
+    while len(friends) > 0:
+        if friends[-1][1] == 0:
+            friends.pop()
+        else:
+            break
+    if len(friends) > 10:
+        friends = friends[0:10]
+    return user, friends
 
 
 def main():
     # Configure Spark
     sc = pyspark.SparkContext.getOrCreate()
     # The directory for the file
-    filename = "your q1.txt cloud storage URI"
+    filename = "q1.txt"
 
     # Get data in proper format
     data = getData(sc, filename)
 
     # Get set of all mutual friends
-    mapData = data.flatMap(mapFriends).groupByKey()
-
+    mapData = data.flatMap(map_friends).reduceByKey(reduce_friends_pair)
+    # print(mapData.take(10))
     # For each person, get top 10 mutual friends
-    getFriends = mapData.map(findMutual)
-
+    getFriends = mapData.map(find_mutual).groupByKey().map(sort_top_friends)
+    # print(getFriends.take(5))
     # Only save the ones we want
     wanted = [924, 8941, 8942, 9019, 49824, 13420, 44410, 8974, 5850, 9993]
     result = getFriends.filter(lambda x: x[0] in wanted).collect()
-
+    for res in result:
+        print("For user %d:" % res[0])
+        for recommendation in res[1]:
+            print(recommendation)
+        print()
     sc.stop()
 
 
