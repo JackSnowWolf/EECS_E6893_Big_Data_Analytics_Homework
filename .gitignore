@@ -4,6 +4,7 @@
 *.pyc
 __pycache__/
 *.zip
+*.log
 
 pic
 hw1/data
