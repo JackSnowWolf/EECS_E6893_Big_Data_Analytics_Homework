@@ -72,7 +72,7 @@ def connected_components(graph):
     :return:
     """
     print("connected components")
-    result = graph.connectedComponents()
+    result = graph.connectedComponents(algorithm="graphx")
 
     # How many clusters / connected components in total for this dataset
     cluster_num = result.select("component").distinct().count()
