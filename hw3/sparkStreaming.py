@@ -23,35 +23,37 @@ Todo:
 
 """
 
-from pyspark import SparkConf,SparkContext
-from pyspark.streaming import StreamingContext
-from pyspark.sql import Row,SQLContext
-import sys
-import requests
-import time
 import subprocess
-import re
-from google.cloud import bigquery
+import time
+
+from pyspark import SparkConf, SparkContext
+from pyspark.sql import SQLContext
+from pyspark.streaming import StreamingContext
 
 # global variables
-bucket = ""    # TODO : replace with your own bucket name
-output_directory_hashtags = 'gs://{}/hadoop/tmp/bigquery/pyspark_output/hashtagsCount'.format(bucket)
-output_directory_wordcount = 'gs://{}/hadoop/tmp/bigquery/pyspark_output/wordcount'.format(bucket)
+bucket = ""  # TODO : replace with your own bucket name
+output_directory_hashtags = 'gs://{}/hadoop/tmp/bigquery/pyspark_output/hashtagsCount'.format(
+    bucket)
+output_directory_wordcount = 'gs://{}/hadoop/tmp/bigquery/pyspark_output/wordcount'.format(
+    bucket)
 
 # output table and columns name
-output_dataset = ''                     #the name of your dataset in BigQuery
+output_dataset = ''  # the name of your dataset in BigQuery
 output_table_hashtags = 'hashtags'
 columns_name_hashtags = ['hashtags', 'count']
 output_table_wordcount = 'wordcount'
 columns_name_wordcount = ['word', 'count', 'time']
 
 # parameter
-IP = 'localhost'    # ip port
-PORT = 9001       # port
+IP = 'localhost'  # ip port
+PORT = 9001  # port
 
-STREAMTIME = 600          # time that the streaming process runs
+# STREAMTIME = 600  # time that the streaming process runs
+STREAMTIME = 6 # for test
 
-WORD = ['data', 'spark', 'ai', 'movie', 'good']     #the words you should filter and do word count
+WORD = ['data', 'spark', 'ai', 'movie',
+        'good']  # the words you should filter and do word count
+
 
 # Helper functions
 def saveToStorage(rdd, output_directory, columns_name, mode):
@@ -65,8 +67,8 @@ def saveToStorage(rdd, output_directory, columns_name, mode):
               mode = "append", append data to the end of file
     """
     if not rdd.isEmpty():
-        (rdd.toDF( columns_name ) \
-        .write.save(output_directory, format="json", mode=mode))
+        (rdd.toDF(columns_name)
+         .write.save(output_directory, format="json", mode=mode))
 
 
 def saveToBigQuery(sc, output_dataset, output_table, directory):
@@ -110,6 +112,7 @@ def hashtagCount(words):
 
     # TODO: insert your code here
     pass
+
 
 def wordCount(words):
     """
@@ -183,7 +186,7 @@ if __name__ == '__main__':
     ssc.stop(stopSparkContext=False, stopGraceFully=True)
 
     # put the temp result in google storage to google BigQuery
-    saveToBigQuery(sc, output_dataset, output_table_hashtags, output_directory_hashtags)
-    saveToBigQuery(sc, output_dataset, output_table_wordcount, output_directory_wordcount)
-
-
+    saveToBigQuery(sc, output_dataset, output_table_hashtags,
+                   output_directory_hashtags)
+    saveToBigQuery(sc, output_dataset, output_table_wordcount,
+                   output_directory_wordcount)
