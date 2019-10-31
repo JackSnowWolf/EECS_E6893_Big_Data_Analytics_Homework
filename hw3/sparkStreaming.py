@@ -31,14 +31,14 @@ from pyspark.sql import SQLContext
 from pyspark.streaming import StreamingContext
 
 # global variables
-bucket = ""  # TODO : replace with your own bucket name
+bucket = "big_data_storage"
 output_directory_hashtags = 'gs://{}/hadoop/tmp/bigquery/pyspark_output/hashtagsCount'.format(
     bucket)
 output_directory_wordcount = 'gs://{}/hadoop/tmp/bigquery/pyspark_output/wordcount'.format(
     bucket)
 
 # output table and columns name
-output_dataset = ''  # the name of your dataset in BigQuery
+output_dataset = 'twitter_analysis'  # the name of your dataset in BigQuery
 output_table_hashtags = 'hashtags'
 columns_name_hashtags = ['hashtags', 'count']
 output_table_wordcount = 'wordcount'
@@ -48,8 +48,8 @@ columns_name_wordcount = ['word', 'count', 'time']
 IP = 'localhost'  # ip port
 PORT = 9001  # port
 
-# STREAMTIME = 600  # time that the streaming process runs
-STREAMTIME = 20  # for test
+STREAMTIME = 600  # time that the streaming process runs
+# STREAMTIME = 20  # for test
 
 WORD = ['data', 'spark', 'ai', 'movie',
         'good']  # the words you should filter and do word count
@@ -138,10 +138,9 @@ def wordCount(words):
     Returns:
         DStream Object with inner structure (word, count, time)
     """
-    word_cnt = words.filter(lambda x: x in WORD).map(
+    word_cnt = words.map(lambda x: x.lower()).filter(lambda x: x in WORD).map(
         lambda x: (x, 1)).reduceByKeyAndWindow(lambda x, y: x + y,
-                                               lambda x, y: x - y, 10)
-
+                                               lambda x, y: x - y, 60, 60)
     word_cnt_total = word_cnt.transform(
         lambda time, rdd: rdd.map(
             lambda x: (x[0], x[1], time.strftime("%Y-%m-%d %H:%M:%S"))))
@@ -161,8 +160,8 @@ if __name__ == '__main__':
     # create sql context, used for saving rdd
     sql_context = SQLContext(sc)
 
-    # create the Streaming Context from the above spark context with batch interval size 5 seconds
-    ssc = StreamingContext(sc, 5)
+    # create the Streaming Context from the above spark context with batch interval size 60 seconds
+    ssc = StreamingContext(sc, 60)
     # setting a checkpoint to allow RDD recovery
     ssc.checkpoint("~/checkpoint_TwitterApp")
 
@@ -190,16 +189,19 @@ if __name__ == '__main__':
     #   2. You may want to use helper function saveToStorage
     #   3. You should use save output to output_directory_hashtags, output_directory_wordcount,
     #       and have output columns name columns_name_hashtags and columns_name_wordcount.
-    # TODO: insert your code here
 
-    topTags.foreachRDD(lambda rdd: print(rdd.collect()))
-    wordCount.foreachRDD(lambda rdd: print(rdd.collect()))
+    topTags.foreachRDD(lambda rdd: saveToStorage(rdd, output_directory_hashtags,
+                                                 columns_name_hashtags,
+                                                 mode="overwrite"))
+    wordCount.foreachRDD(
+        lambda rdd: saveToStorage(rdd, output_directory_wordcount,
+                                  columns_name_wordcount, mode="append"))
     # start streaming process, wait for 600s and then stop.
     ssc.start()
     time.sleep(STREAMTIME)
     ssc.stop(stopSparkContext=False, stopGraceFully=True)
-    # # put the temp result in google storage to google BigQuery
-    # saveToBigQuery(sc, output_dataset, output_table_hashtags,
-    #                output_directory_hashtags)
-    # saveToBigQuery(sc, output_dataset, output_table_wordcount,
-    #                output_directory_wordcount)
+    # put the temp result in google storage to google BigQuery
+    saveToBigQuery(sc, output_dataset, output_table_hashtags,
+                   output_directory_hashtags)
+    saveToBigQuery(sc, output_dataset, output_table_wordcount,
+                   output_directory_wordcount)
