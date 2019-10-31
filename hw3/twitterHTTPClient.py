@@ -29,7 +29,7 @@ from tweepy import Stream
 from tweepy.streaming import StreamListener
 
 # credentials
-# TODO: replace with your own credentials
+# replace with your own credentials
 ACCESS_TOKEN = '1186641375900647425-Yk6Mr116gbZixYb0pt2bXGi0DWZiZa'  # your access token
 ACCESS_SECRET = '8xYHZbwKlF4zMdqHEWuwgO1v0ocHuictsQnCn4ElPT1Ny'  # your access token secret
 CONSUMER_KEY = 'Wg4xVrzE0DU8Ey4sYPQv0ntcv'  # your API key

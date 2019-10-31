@@ -49,7 +49,7 @@ IP = 'localhost'  # ip port
 PORT = 9001  # port
 
 # STREAMTIME = 600  # time that the streaming process runs
-STREAMTIME = 6 # for test
+STREAMTIME = 20  # for test
 
 WORD = ['data', 'spark', 'ai', 'movie',
         'good']  # the words you should filter and do word count
@@ -110,8 +110,15 @@ def hashtagCount(words):
         DStream Object with inner structure (hashtag, count)
     """
 
-    # TODO: insert your code here
-    pass
+    def updateFunc(new_values, last_sum):
+        return sum(new_values) + (last_sum or 0)
+
+    hashtag = words.map(lambda x: x.lower()).filter(
+        lambda x: len(x) > 2 and x[0] == "#").map(
+        lambda x: (x, 1))
+    hashtag_cnt = hashtag.reduceByKey(lambda cnt1, cnt2: cnt1 + cnt2)
+    hashtag_cnt_total = hashtag_cnt.updateStateByKey(updateFunc)
+    return hashtag_cnt_total
 
 
 def wordCount(words):
@@ -129,11 +136,16 @@ def wordCount(words):
     Args:
         dstream(DStream): stream of real time tweets
     Returns:
-        DStream Object with inner structure (word, (count, time))
+        DStream Object with inner structure (word, count, time)
     """
+    word_cnt = words.filter(lambda x: x in WORD).map(
+        lambda x: (x, 1)).reduceByKeyAndWindow(lambda x, y: x + y,
+                                               lambda x, y: x - y, 10)
 
-    # TODO: insert your code here
-    pass
+    word_cnt_total = word_cnt.transform(
+        lambda time, rdd: rdd.map(
+            lambda x: (x[0], x[1], time.strftime("%Y-%m-%d %H:%M:%S"))))
+    return word_cnt_total
 
 
 if __name__ == '__main__':
@@ -180,13 +192,14 @@ if __name__ == '__main__':
     #       and have output columns name columns_name_hashtags and columns_name_wordcount.
     # TODO: insert your code here
 
+    topTags.foreachRDD(lambda rdd: print(rdd.collect()))
+    wordCount.foreachRDD(lambda rdd: print(rdd.collect()))
     # start streaming process, wait for 600s and then stop.
     ssc.start()
     time.sleep(STREAMTIME)
     ssc.stop(stopSparkContext=False, stopGraceFully=True)
-
-    # put the temp result in google storage to google BigQuery
-    saveToBigQuery(sc, output_dataset, output_table_hashtags,
-                   output_directory_hashtags)
-    saveToBigQuery(sc, output_dataset, output_table_wordcount,
-                   output_directory_wordcount)
+    # # put the temp result in google storage to google BigQuery
+    # saveToBigQuery(sc, output_dataset, output_table_hashtags,
+    #                output_directory_hashtags)
+    # saveToBigQuery(sc, output_dataset, output_table_wordcount,
+    #                output_directory_wordcount)
