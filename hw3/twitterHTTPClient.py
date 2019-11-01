@@ -30,10 +30,10 @@ from tweepy.streaming import StreamListener
 
 # credentials
 # replace with your own credentials
-ACCESS_TOKEN = '1186641375900647425-Yk6Mr116gbZixYb0pt2bXGi0DWZiZa'  # your access token
-ACCESS_SECRET = '8xYHZbwKlF4zMdqHEWuwgO1v0ocHuictsQnCn4ElPT1Ny'  # your access token secret
-CONSUMER_KEY = 'Wg4xVrzE0DU8Ey4sYPQv0ntcv'  # your API key
-CONSUMER_SECRET = 'FBXUfei2Sp7W7dfuLtK8wbY5BF20KB4Ck5T5IGiE7AoEdWtQZW'  # your API secret key
+ACCESS_TOKEN = ''  # your access token
+ACCESS_SECRET = ''  # your access token secret
+CONSUMER_KEY = ''  # your API key
+CONSUMER_SECRET = ''  # your API secret key
 
 # the tags to track
 tags = ['#', 'bigdata', 'spark', 'ai', 'movie']
