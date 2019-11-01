@@ -117,7 +117,8 @@ def hashtagCount(words):
         lambda x: len(x) > 2 and x[0] == "#").map(
         lambda x: (x, 1))
     hashtag_cnt = hashtag.reduceByKey(lambda cnt1, cnt2: cnt1 + cnt2)
-    hashtag_cnt_total = hashtag_cnt.updateStateByKey(updateFunc)
+    hashtag_cnt_total = hashtag_cnt.updateStateByKey(updateFunc).transform(
+        lambda rdd: rdd.sortBy(lambda x: x[1], ascending=False))
     return hashtag_cnt_total
 
 
