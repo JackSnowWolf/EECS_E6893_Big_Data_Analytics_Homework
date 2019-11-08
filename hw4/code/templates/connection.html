@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homework 4 Question 3</title>
+</head>
+<body>
+<h1>Question 3 - Connection</h1>
+<div id='dashboard'></div>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="{% static "js/connection.js" %}"></script>
+<script>
+    var nodes = {{ n | safe }}
+    var edges = {{ e | safe}}
+
+    connection(nodes, edges)
+</script>
+</body>
+</html>
