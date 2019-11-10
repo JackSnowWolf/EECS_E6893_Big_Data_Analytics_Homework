@@ -14,7 +14,7 @@ function dashboard(id, fData) {
 
     // compute total for each state.
     fData.forEach(function (d) {
-        d.total = ; /* TO FINISH */
+        d.total =; /* TO FINISH */
     });
 
     // function to handle histogram.
@@ -67,7 +67,7 @@ function dashboard(id, fData) {
             return d3.format(",")(d[1])
         })
             .attr("x", function (d) {
-                return /* TO FINISH */ + x.rangeBand() / 2;
+                return /* TO FINISH */ +x.rangeBand() / 2;
             })
             .attr("y", /* TO FINISH */)
             .attr("text-anchor", "middle");
