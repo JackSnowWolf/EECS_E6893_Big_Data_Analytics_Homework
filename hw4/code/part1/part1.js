@@ -10,24 +10,31 @@ var svg = d3.select('svg')
 const barPadding = 5;
 const barWidth = svgWidth / data.length - barPadding;
 
-function translateHelper(d, i) {
+function translateBarHelper(d, i) {
     return "translate(" + (barWidth + barPadding) * i + ","
         + (svgHeight - d) + ")";
 }
 
+function translateTextHelper(d, i) {
+    return "translate(" + ((barWidth + barPadding) * i + barWidth / 2) + ","
+        + (svgHeight - d - 2) + ")";
+}
+
 var barChart = svg.selectAll("rect")
     .data(data)
-    .enter()
-    .append("rect")
+    .enter();
+
+barChart.append("rect")
     .attr("class", "bar")
     .attr("height", function (d) {
         return d;
     })
     .attr("width", barWidth)
-    .attr("transform", translateHelper)
+    .attr("transform", translateBarHelper)
     .attr("fill", "#CC6450");
 
 barChart.append("text")
     .text(function (d) {
         return d;
-    }).attr();
+    }).attr("transform", translateTextHelper)
+    .style("text-anchor", "middle");
