@@ -14,14 +14,14 @@ function dashboard(id, fData) {
 
     // compute total for each state.
     fData.forEach(function (d) {
-        d.total =; /* TO FINISH */
+        d.total = NaN; /* TO FINISH */
     });
 
     // function to handle histogram.
     function histoGram(fD) {
         var hG = {}, hGDim = {t: 60, r: 0, b: 30, l: 0};
-        hGDim.w = 500 - hGDim.l - hGDim.r,
-            hGDim.h = 300 - hGDim.t - hGDim.b;
+        hGDim.w = 500 - hGDim.l - hGDim.r;
+        hGDim.h = 300 - hGDim.t - hGDim.b;
 
         //create svg for histogram.
         var hGsvg = d3.select(id).append("svg")
