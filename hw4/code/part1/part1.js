@@ -7,17 +7,27 @@ var svg = d3.select('svg')
     .attr("width", svgWidth)
     .attr("height", svgHeight);
 
+const barPadding = 5;
+const barWidth = svgWidth / data.length - barPadding;
+
+function translateHelper(d, i) {
+    return "translate(" + (barWidth + barPadding) * i + ","
+        + (svgHeight - d) + ")";
+}
+
 var barChart = svg.selectAll("rect")
     .data(data)
     .enter()
     .append("rect")
     .attr("class", "bar")
-    .attr('x', 20)
-    .attr('y', function (d, i) {
-        return i * 30
+    .attr("height", function (d) {
+        return d;
     })
-    .attr('height', 25)
-    .attr('width', function (d) {
-        return d
-    })
+    .attr("width", barWidth)
+    .attr("transform", translateHelper)
     .attr("fill", "#CC6450");
+
+barChart.append("text")
+    .text(function (d) {
+        return d;
+    }).attr();
