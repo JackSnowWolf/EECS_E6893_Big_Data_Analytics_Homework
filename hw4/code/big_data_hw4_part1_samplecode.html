@@ -5,7 +5,13 @@
     <title>Homework 4 Question 1</title>
 </head>
 
-<style>body{}.bar-chart{background-color: #D2FFBD;}</style>
+<body>
+<style>body {
+}
+
+.bar-chart {
+    background-color: #D2FFBD;
+}</style>
 <svg class="bar-chart"></svg>
 
 <script src="https://d3js.org/d3.v5.min.js"></script>
@@ -16,19 +22,24 @@
     // The label must locate 2px above the middle of each bar.
 
     var svg = d3.select('svg')
-            .attr("width", svgWidth)
-            .attr("height", svgHeight);
+        .attr("width", svgWidth)
+        .attr("height", svgHeight);
 
     var barChart = svg.selectAll("rect")
-            .data(data)
-            .enter()
-            .append("rect")
-            .attr("class", "bar")
-            .attr('x', 20)
-            .attr('y', function(d,i){return i*30})
-            .attr('height', 25)
-            .attr('width', function(d){return d})
-            .attr("fill", "#CC6450");
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr('x', 20)
+        .attr('y', function (d, i) {
+            return i * 30
+        })
+        .attr('height', 25)
+        .attr('width', function (d) {
+            return d
+        })
+        .attr("fill", "#CC6450");
+
 </script>
 
 </body>
