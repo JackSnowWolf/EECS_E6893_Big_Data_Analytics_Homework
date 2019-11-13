@@ -125,7 +125,7 @@ function dashboard(id, fData) {
                 .attr("y", function (d) {
                     return y(d[1]) - 5;
                 });
-        }
+        };
         return hG;
     }
 
