@@ -1,6 +1,6 @@
-from django.http import HttpResponse
-from django.shortcuts import render
 import pandas_gbq
+from django.shortcuts import render
+from django.http import HttpResponse
 from google.oauth2 import service_account
 
 # Make sure you have installed pandas-gbq at first;
