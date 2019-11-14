@@ -1,6 +1,5 @@
 import pandas_gbq
 from django.shortcuts import render
-from django.http import HttpResponse
 from google.oauth2 import service_account
 
 # Make sure you have installed pandas-gbq at first;
@@ -10,11 +9,13 @@ from google.oauth2 import service_account
 # To get your credential
 
 credentials = service_account.Credentials.from_service_account_file(
-    'xx/xx/xxxx.json')
+    '/home/huchong/HuChong/Columbia/'
+    'EECS_E6893_Big_Data_Analytics/Homework/'
+    'hw4/code/hardy-symbol-252200-bedb45223747.json')
 
 
 def hello(request):
-    context = {}
+    context = dict()
     context['content1'] = 'Hello World!'
     return render(request, 'helloworld.html', context)
 
