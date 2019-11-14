@@ -4,24 +4,17 @@
     <meta charset="utf-8">
     <title>Homework 4 Question 2</title>
 </head>
-<link rel="stylesheet" href="{% static " css
-/dashboard.css" %}">
+<link rel="stylesheet" href="{% static "css/dashboard.css" %}">
 <body>
 <h1>Question 2 - Dashboard</h1>
 <div id='dashboard'></div>
 
 <svg class="bar-chart"></svg>
 <script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="{% static " js
-/dashboard.js" %}"></script>
-<
-script >
-var Data = {
-{
-    data | safe
-}
-}
-dashboard('#dashboard', Data)
+<script src="{% static "js/dashboard.js" %}"></script>
+<script>
+    var Data= {{ data | safe}}
+    dashboard('#dashboard', Data)
 </script>
 </body>
 </html>
