@@ -31,7 +31,7 @@ def dashboard(request):
     data_list = []
     for df_row in df_list:
         data_row = dict()
-        data_row["Time"] = df_row["time"].strftime(format="%H:%m")
+        data_row["Time"] = df_row["time"].strftime(format="%H:%M")
         df_row = dict(df_row)
         df_row.pop("time")
         data_row["count"] = df_row

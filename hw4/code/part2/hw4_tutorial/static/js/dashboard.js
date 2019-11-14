@@ -4,7 +4,7 @@
 
 function dashboard(id, fData) {
     // Define the color to change if your mouse move on the bar
-    var barColor = '';
+    var barColor = '#49abff';
 
     // Choose color for each word:
     function segColor(c) {
@@ -15,13 +15,16 @@ function dashboard(id, fData) {
             movie: "#CC6E47",
             spark: '#FFD4B3'
         };
-        return /* TO FINISH */;
+        /* TO FINISH */
+        return cmap[c];
     }
 
     // compute total for each state.
     fData.forEach(function (d) {
         d.total = NaN;
         /* TO FINISH */
+        d.total = Object.keys(d.count)
+            .reduce((sum, key) => sum + d.count[key], 0);
     });
 
     // function to handle histogram.
@@ -59,8 +62,14 @@ function dashboard(id, fData) {
 
         //create the rectangles.
         bars.append("rect")
-            .attr("x", /* TO FINISH */)
-            .attr("y", /* TO FINISH */)
+        /* TO FINISH */
+            .attr("x", function (d, i) {
+                return x(d[0]);
+            })
+            /* TO FINISH */
+            .attr("y", function (d) {
+                return y(d[1]);
+            })
             .attr("width", x.rangeBand())
             .attr("height", function (d) {
                 return hGDim.h - y(d[1]);
@@ -74,9 +83,13 @@ function dashboard(id, fData) {
             return d3.format(",")(d[1])
         })
             .attr("x", function (d) {
-                return /* TO FINISH */ +x.rangeBand() / 2;
+                /* TO FINISH */
+                return x(d[0]) + x.rangeBand() / 2;
             })
-            .attr("y", /* TO FINISH */)
+            /* TO FINISH */
+            .attr("y", function (d) {
+                return y(d[1]) - 5;
+            })
             .attr("text-anchor", "middle");
 
         function mouseover(d) {  // utility function to be called on mouseover.
@@ -111,7 +124,10 @@ function dashboard(id, fData) {
 
             // transition the height and color of rectangles.
             bars.select("rect").transition().duration(500)
-                .attr("y", /* TO FINISH */)
+            /* TO FINISH */
+                .attr("y", function (d) {
+                    return y(d[1]);
+                })
                 .attr("height", function (d) {
                     return hGDim.h - y(d[1]);
                 })
@@ -255,7 +271,8 @@ function dashboard(id, fData) {
     var tF = ['ai', 'data', 'good', 'movie', 'spark'].map(function (d) {
         return {
             type: d, count: d3.sum(fData.map(function (t) {
-                return /* TO FINISH */;
+                /* TO FINISH */
+                return t.count[d];
             }))
         };
     });
