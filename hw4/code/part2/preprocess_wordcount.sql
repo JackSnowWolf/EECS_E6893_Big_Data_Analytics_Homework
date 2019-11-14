@@ -23,7 +23,7 @@ SELECT time, count as spark
 FROM `hardy-symbol-252200.twitter_analysis.wordcount`
 WHERE word="spark";
 
-CREATE TABLE twitter_analysis.rstcnt AS
+CREATE TABLE IF NOT EXISTS twitter_analysis.rstcnt AS
 (SELECT COALESCE(t1.time, t2.time) as time, IFNULL(data, 0) as data,
 IFNULL(ai, 0) as ai, IFNULL(good, 0) as good, IFNULL(movie, 0) as movie,
 IFNULL(spark, 0) as spark
