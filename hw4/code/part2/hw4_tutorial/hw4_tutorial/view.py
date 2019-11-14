@@ -9,9 +9,7 @@ from google.oauth2 import service_account
 # To get your credential
 
 credentials = service_account.Credentials.from_service_account_file(
-    '/home/huchong/HuChong/Columbia/'
-    'EECS_E6893_Big_Data_Analytics/Homework/'
-    'hw4/code/hardy-symbol-252200-bedb45223747.json')
+    '/home/huchong/Downloads/hardy-symbol-252200-25dbece318bf.json')
 
 
 def hello(request):
@@ -22,12 +20,25 @@ def hello(request):
 
 def dashboard(request):
     pandas_gbq.context.credentials = credentials
-    pandas_gbq.context.project = "Your-Project"
+    pandas_gbq.context.project = "hardy-symbol-252200"
 
-    SQL = ""
+    SQL = "SELECT time, ai, data, good, movie, spark " \
+          "FROM `hardy-symbol-252200.twitter_analysis.rstcnt` " \
+          "LIMIT 8"
     df = pandas_gbq.read_gbq(SQL)
+    df_list = df.to_dict('records')
 
-    data = {}
+    data_list = []
+    for df_row in df_list:
+        data_row = dict()
+        data_row["Time"] = df_row["time"].strftime(format="%H:%m")
+        df_row = dict(df_row)
+        df_row.pop("time")
+        data_row["count"] = df_row
+        data_list.append(data_row)
+
+    data = dict()
+    data["data"] = data_list
 
     '''
         TODO: Finish the SQL to query the data, it should be limited to 8 rows. 
