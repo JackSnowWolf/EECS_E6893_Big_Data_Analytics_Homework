@@ -1,8 +1,9 @@
-import csv
-from pyspark import SparkConf, SparkContext
-from pyspark import SQLContext
 import os
+import csv
+
 from graphframes import *
+from pyspark import SQLContext
+from pyspark import SparkConf, SparkContext
 
 
 def getData(sc, filename):
@@ -114,7 +115,7 @@ def main():
     SparkContext.setCheckpointDir(sc, "checkpoints")
 
     # The directory for the file
-    filename = "/q1.txt"
+    filename = "q1.txt"
 
     # Get data in proper format
     data = getData(sc, filename)
@@ -122,7 +123,6 @@ def main():
     vertices = get_vertices(data, sqlcontext)
     graph = GraphFrame(vertices, edges)
     connected_components(graph=graph)
-
 
 
 if __name__ == '__main__':
