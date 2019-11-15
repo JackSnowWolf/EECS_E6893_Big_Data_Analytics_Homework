@@ -56,24 +56,28 @@ def dashboard(request):
 
 def connection(request):
     pandas_gbq.context.credentials = credentials
-    pandas_gbq.context.project = "Your-Project"
-    SQL1 = ''
+    pandas_gbq.context.project = "hardy-symbol-252200"
+    SQL1 = 'SELECT node ' \
+           'FROM `hardy-symbol-252200.graph.nodes`'
     df1 = pandas_gbq.read_gbq(SQL1)
 
-    SQL2 = ''
+    SQL2 = 'SELECT source, target ' \
+           'FROM `hardy-symbol-252200.graph.edges`'
     df2 = pandas_gbq.read_gbq(SQL2)
 
-    data = {}
+    data = {
+        'n': list(df1.T.to_dict().values()),
+        'e': list(df2.T.to_dict().values())
+    }
 
     '''
         TODO: Finish the SQL to query the data, it should be limited to 8 rows. 
         Then process them to format below:
         Format of data:
-        {'n': [xxx, xxx, xxx, xxx],
-         'e': [{'source': xxx, 'target': xxx},
-                {'source': xxx, 'target': xxx},
-                ...
-                ]
+        {
+        ‘n’: [{‘node’: 18233},{‘node’: 18234},...]
+        'e': [{'source':0, 'target':0},{'source':0, 'target':1},... ]
         }
     '''
+
     return render(request, 'connection.html', data)
