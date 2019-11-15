@@ -1,5 +1,5 @@
-import os
 import csv
+import os
 
 from graphframes import *
 from pyspark import SQLContext
@@ -66,6 +66,18 @@ def get_edges(data, sqlcontext):
     return sqlcontext.createDataFrame(edges, schema=["src", "dst"])
 
 
+def save_nodes(nodes):
+    """
+    save node list to csv
+    :param nodes: list that contain nodes in the cluster of 25 users
+    :return:
+    """
+    with open("nodes.csv", "w") as csv_file:
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow(["node"])
+        csv_writer.writerows(nodes)
+
+
 def connected_components(graph):
     """
     run connected components on graph
@@ -100,8 +112,19 @@ def connected_components(graph):
     user_list = result.where(result["component"].isin(cluster_id)).select(
         "id").collect()
     user_ls = [row["id"] for row in user_list]
+    user_ls.sort()
+    save_nodes([[node] for node in user_ls])
     print(user_ls)
     print()
+
+    # get edges for 25 nodes
+    df_edges = graph.edges.filter(
+        graph.edges.dst.isin(user_ls) & graph.edges.src.isin(user_ls))
+    df_edges = df_edges.rdd.map(
+        lambda x: (user_ls.index(x[0]), user_ls.index(x[1]))).toDF(
+        ["source", "target"])
+    # write edges to csv
+    df_edges.toPandas().to_csv("edges.csv", header=True, index=False)
     return
 
 
