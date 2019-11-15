@@ -5,8 +5,10 @@ function connection(nodes, edges) {
 
     var svg = d3.select("body")
         .append("svg")
-        .attr(/* TO FINISH */)
-        .attr(/* TO FINISH */);
+        /* TO FINISH */
+        .attr("height", height)
+        /* TO FINISH */
+        .attr("width", width);
 
     var force = d3.layout.force()
         .nodes(nodes)
@@ -22,9 +24,11 @@ function connection(nodes, edges) {
 
 
     var svg_edges = svg.selectAll("line")
-        .data(/* TO FINISH */)
+    /* TO FINISH */
+        .data(edges)
         .enter()
-        .append(/* TO FINISH */)
+        /* TO FINISH */
+        .append("line")
         .style("stroke", "#ccc")
         .style("stroke-width", 1);
 
@@ -32,11 +36,16 @@ function connection(nodes, edges) {
 
 
     var svg_nodes = svg.selectAll("circle")
-        .data(/* TO FINISH */)
+    /* TO FINISH */
+        .data(nodes)
         .enter()
-        .append(/* TO FINISH */)
+        /* TO FINISH */
+        .append("circle")
         .attr("r", 20)
-        .style("fill", /* TO FINISH */)
+        /* TO FINISH */
+        .style("fill", function (d) {
+            return color(d.index);
+        })
         .call(force.drag);
 
 
@@ -47,14 +56,29 @@ function connection(nodes, edges) {
         .style("fill", "black")
         .attr("dx", 20)
         .attr("dy", 8)
-        .text(/* TO FINISH */);
+        /* TO FINISH */
+        .text(function (d) {
+            return d.node;
+        });
 
 
     force.on("tick", function () {
-        svg_edges.attr("x1", /* TO FINISH */)
-            .attr("y1", /* TO FINISH */)
-            .attr("x2", /* TO FINISH */)
-            .attr("y2", /* TO FINISH */);
+        /* TO FINISH */
+        svg_edges.attr("x1", function (d) {
+            return d.source.x;
+        })
+        /* TO FINISH */
+            .attr("y1", function (d) {
+                return d.source.y;
+            })
+            /* TO FINISH */
+            .attr("x2", function (d) {
+                return d.target.x;
+            })
+            /* TO FINISH */
+            .attr("y2", function (d) {
+                return d.target.y;
+            });
 
         svg_nodes.attr("cx", function (d) {
             return d.x;
