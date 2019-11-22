@@ -14,8 +14,17 @@ If you have any suggestions or questions, please contact me!
 
 ## Code
 
-```
+Structure: each homework is inside different folder with assignment,
+tutorial and report.
 
+```
+Homework
+├── hw0
+├── hw1
+├── hw2
+├── hw3
+├── hw4
+└── README.md
 ```
 
 
