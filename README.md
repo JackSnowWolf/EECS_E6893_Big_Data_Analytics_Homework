@@ -27,6 +27,12 @@ Homework
 └── README.md
 ```
 
-
+| homework | Content |
+| :---: | :---: |
+| hw0 | GCP configuration |
+| hw1 | k-mean and regression |
+| hw2 | graph analysis |
+| hw3 | streaming data analysis |
+| hw4 | data visualization |
 
 
